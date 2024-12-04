@@ -1,3 +1,4 @@
+/*
 function Square(name, pricetext, color, price, groupNumber, baserent, rent1, rent2, rent3, rent4, rent5) {
 	this.name = name;
 	this.pricetext = pricetext;
@@ -67,6 +68,102 @@ function luxurytax() {
 
 	$("landed").show().text("You landed on Luxury Tax. Pay $75.");
 }
+	*/
+	class Square {
+		constructor(name, pricetext, color, price = 0, groupNumber = 0, baserent = 0, rent1 = 0, rent2 = 0, rent3 = 0, rent4 = 0, rent5 = 0) {
+			this.name = name;
+			this.pricetext = pricetext;
+			this.color = color;
+			this.owner = 0;
+			this.mortgage = false;
+			this.house = 0;
+			this.hotel = 0;
+			this.groupNumber = groupNumber;
+			this.price = price;
+			this.baserent = baserent;
+			this.rent1 = rent1;
+			this.rent2 = rent2;
+			this.rent3 = rent3;
+			this.rent4 = rent4;
+			this.rent5 = rent5;
+			this.landcount = 0;
+			this.houseprice = this.calculateHousePrice(groupNumber);
+		}
+	
+		calculateHousePrice(groupNumber) {
+			if (groupNumber === 3 || groupNumber === 4) return 50;
+			if (groupNumber === 5 || groupNumber === 6) return 100;
+			if (groupNumber === 7 || groupNumber === 8) return 150;
+			if (groupNumber === 9 || groupNumber === 10) return 200;
+			return 0;
+		}
+	}
+	
+	class Card {
+		constructor(text, action) {
+			this.text = text;
+			this.action = action;
+		}
+	}
+	
+	function corrections() {
+		document.getElementById("cell24name").textContent = "blooming...";
+	}
+	
+	function utiltext() {
+		return '&nbsp;&nbsp;&nbsp;&nbsp;If one "Utility" is owned rent is 4 times amount shown on dice.<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;If both "Utilitys" are owned rent is 10 times amount shown on dice.';
+	}
+	
+	function transtext() {
+		return '<div style="font-size: 14px; line-height: 1.5;">Rent<span style="float: right;">$25.</span><br />If 2 Transportations are owned<span style="float: right;">$50.</span><br />If 3<span style="float: right;">$100.</span><br />If 4<span style="float: right;">$200.</span></div>';
+	}
+	
+	function citytax() {
+		const p = player[turn];
+		const popupBackground = document.getElementById("popupbackground");
+		const popupWrap = document.getElementById("popupwrap");
+	
+		if (p.human) {
+			const buttonAonclick = () => {
+				hide(popupBackground);
+				hide(popupWrap);
+				addalert(`${p.name} paid $200 for landing on City Tax.`);
+				p.pay(200, 0);
+			};
+	
+			const buttonBonclick = () => {
+				hide(popupBackground);
+				hide(popupWrap);
+				let cost = p.money;
+	
+				for (let i = 0; i < 40; i++) {
+					const sq = square[i];
+					if (sq.owner === turn) {
+						cost += sq.mortgage ? sq.price * 0.5 : sq.price;
+						cost += sq.house * sq.houseprice;
+					}
+				}
+	
+				cost = Math.round(cost * 0.1);
+				addalert(`${p.name} paid $${cost} for landing on City Tax.`);
+				p.pay(cost, 0);
+			};
+	
+			popup(`You landed on City Tax. You must pay $200 or ten percent of your total worth.<div><input type='button' value='Pay $200' onclick='${buttonAonclick}' /><input type='button' value='Pay 10%' onclick='${buttonBonclick}' /></div>`, false);
+		} else {
+			addalert(`${p.name} paid $200 for landing on City Tax.`);
+			p.pay(200, 0);
+		}
+	}
+	
+	function luxurytax() {
+		const p = player[turn];
+		addalert(`${p.name} paid $75 for landing on Luxury Tax.`);
+		p.pay(75, 0);
+	
+		$("#landed").show().text("You landed on Luxury Tax. Pay $75.");
+	}
+	
 
 var square = [];
 
